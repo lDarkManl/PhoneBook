@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты поиска - PhoneBook{% endblock %}
+
+{% block content %}
+<h1>Результаты поиска: "{{ query }}"</h1>
+
+<div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Найдено сотрудников: {{ employees.count }}</h5>
+    </div>
+    <div class="card-body">
+        {% if employees %}
+        <ul class="list-group">
+            {% for employee in employees %}
+            <li class="list-group-item">
+                <a href="{% url 'employee_detail' employee.id %}">
+                    {{ employee.surname }} {{ employee.name }} {{ employee.middle_name }}
+                </a>
+                <span class="badge bg-info">{{ employee.role.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">Сотрудники не найдены</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Найдено контактов: {{ contacts.count }}</h5>
+    </div>
+    <div class="card-body">
+        {% if contacts %}
+        <ul class="list-group">
+            {% for contact in contacts %}
+            <li class="list-group-item">
+                {{ contact.employee }} - {{ contact.subdivision.name }}
+                <br><small>{{ contact.internal_phone }} | {{ contact.email }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">Контакты не найдены</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

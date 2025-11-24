@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.name }} - PhoneBook{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Информация о событии</h1>
+    <div>
+        <a href="{% url 'event_update' event.id %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        <a href="{% url 'event_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Назад
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">{{ event.name }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">ID:</th>
+                        <td>{{ event.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Тип события:</th>
+                        <td><span class="badge bg-info">{{ event.type_event.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Организатор:</th>
+                        <td>
+                            <a href="{% url 'employee_detail' event.organizer.id %}">
+                                {{ event.organizer }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Место проведения:</th>
+                        <td><i class="bi bi-geo-alt"></i> {{ event.location }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">Начало:</th>
+                        <td>
+                            {% if event.start_datetime %}
+                                {{ event.start_datetime|date:"d.m.Y H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Окончание:</th>
+                        <td>
+                            {% if event.end_datetime %}
+                                {{ event.end_datetime|date:"d.m.Y H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

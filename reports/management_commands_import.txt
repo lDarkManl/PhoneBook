@@ -1,0 +1,1 @@
+Use management command: python manage.py import_from_docx /mnt/data/Kursovaya_BD2.docx

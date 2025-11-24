@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ faculty.name }} - Кафедры{% endblock %}
+
+{% block content %}
+<!-- Секция заголовка -->
+<div style="background-color: white; padding: 30px 0; border-bottom: 1px solid #e0e0e0;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 style="color: #2b5a8e; font-weight: bold; margin: 0;">{{ faculty.name }}</h3>
+                <p class="text-muted mb-0">Структура факультета</p>
+            </div>
+            <a href="{% url 'subdivision_list' %}" class="btn btn-secondary" style="border-radius: 25px;">
+                <i class="bi bi-arrow-left"></i> Назад
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Список кафедр и декан -->
+<div style="background-color: white; padding: 30px 0;">
+    <div class="container">
+        <div class="row">
+            <!-- Левая колонка - Кафедры -->
+            <div class="col-md-8">
+                <div class="row g-3">
+                    {% for department in departments %}
+                    <div class="col-md-12">
+                        <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                            <div class="card-body p-3">
+                                <!-- Информация о кафедре -->
+                                <h6 style="color: #2b5a8e; font-weight: bold; margin-bottom: 10px;">{{ department.name }}</h6>
+                                <p class="mb-1" style="font-size: 0.9rem; color: #666;">
+                                    <strong>Тип:</strong> {{ department.id_type_division.name }}
+                                </p>
+                                <p class="mb-3" style="font-size: 0.9rem; color: #666;">
+                                    <strong>Аудитория:</strong> {{ department.id_location.building }}/{{ department.id_location.room }}
+                                </p>
+                                
+                                <!-- Заведующий кафедрой -->
+                                {% if department.head %}
+                                <div class="row align-items-center pt-2 border-top">
+                                    <div class="col-3">
+                                        {% if department.head.employee.photo %}
+                                        <img src="{{ department.head.employee.photo.url }}" alt="{{ department.head.employee.surname }}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px;">
+                                        {% else %}
+                                        <div style="width: 100%; height: 80px; background-color: #c0c0c0; border-radius: 4px;"></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-9" style="font-size: 0.9rem; color: #666;">
+                                        <p class="mb-1"><strong>Заведующий:</strong></p>
+                                        <p class="mb-1">{{ department.head.employee.surname }} {{ department.head.employee.name }}</p>
+                                        {% if department.head.internal_phone %}
+                                        <p class="mb-0"><strong>Телефон:</strong> {{ department.head.internal_phone }}</p>
+                                        {% elif department.head.city_phone %}
+                                        <p class="mb-0"><strong>Телефон:</strong> {{ department.head.city_phone }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <p class="mb-0 text-muted pt-2 border-top">Заведующий не назначен</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> Кафедры не найдены
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Правая колонка - Декан факультета -->
+            <div class="col-md-4">
+                <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px; position: sticky; top: 20px;">
+                    <div class="card-body p-3">
+                        <h6 style="color: #2b5a8e; font-weight: bold; margin-bottom: 15px;">Декан факультета</h6>
+                        {% if faculty.head %}
+                        <div class="text-center mb-3">
+                            {% if faculty.head.employee.photo %}
+                            <img src="{{ faculty.head.employee.photo.url }}" alt="{{ faculty.head.employee.surname }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;">
+                            {% else %}
+                            <div style="width: 100%; height: 150px; background-color: #c0c0c0; border-radius: 4px; margin: 0 auto;"></div>
+                            {% endif %}
+                        </div>
+                        <div style="font-size: 0.9rem; color: #666;">
+                            <p class="mb-1"><strong>{{ faculty.head.employee.surname }}</strong></p>
+                            <p class="mb-2">{{ faculty.head.employee.name }} {{ faculty.head.employee.middle_name|default:"" }}</p>
+                            {% if faculty.head.internal_phone %}
+                            <p class="mb-1"><i class="bi bi-telephone"></i> {{ faculty.head.internal_phone }}</p>
+                            {% endif %}
+                            {% if faculty.head.city_phone %}
+                            <p class="mb-0"><i class="bi bi-phone"></i> {{ faculty.head.city_phone }}</p>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center">Декан не назначен</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

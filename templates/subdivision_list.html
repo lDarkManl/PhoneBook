@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Подразделения - PhoneBook{% endblock %}
+
+{% block content %}
+<!-- Секция поиска -->
+<div style="background-color: white; padding: 30px 0; border-bottom: 1px solid #e0e0e0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-2">
+                <h4 style="color: black; font-weight: bold; margin: 0;">
+                    Телефонный<br>справочник<i class="bi bi-telephone-fill" style="font-size: 1.2rem; margin-left: 5px;"></i>
+                </h4>
+            </div>
+            <div class="col-md-8">
+                <form method="get" action="{% url 'subdivision_list' %}">
+                    <div class="input-group" style="border: 1px solid #ddd; border-radius: 25px; overflow: hidden;">
+                        <input type="text" class="form-control border-0" name="search" placeholder="Поиск подразделений..." value="{{ request.GET.search }}" style="box-shadow: none; padding-left: 20px;">
+                        <button class="btn border-0 bg-white" type="submit" style="padding-right: 15px;">
+                            <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2 text-end">
+                <a href="{% url 'export_subdivisions_excel' %}" class="btn btn-primary" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; background-color: #2b5a8e; border: none;">
+                    Экспорт<br>в Excel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Список факультетов -->
+<div style="background-color: white; padding: 30px 0;">
+    <div class="container">
+        <div class="row g-3">
+            {% for subdivision in subdivisions %}
+            <div class="col-md-12">
+                <a href="{% url 'subdivision_tree' subdivision.id %}" class="text-decoration-none">
+                    <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px; transition: transform 0.3s;">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <!-- Информация о факультете -->
+                                <div class="col-md-5">
+                                    <h5 style="color: #2b5a8e; font-weight: bold; margin-bottom: 10px;">{{ subdivision.name }}</h5>
+                                    <p class="mb-1" style="font-size: 0.9rem; color: #666;">
+                                        <strong>Тип:</strong> {{ subdivision.id_type_division.name }}
+                                    </p>
+                                    <p class="mb-1" style="font-size: 0.9rem; color: #666;">
+                                        <strong>Расположение:</strong> {{ subdivision.id_location.building }}/{{ subdivision.id_location.room }}
+                                    </p>
+                                    <p class="mb-0" style="font-size: 0.9rem; color: #666;">
+                                        <strong>Кафедр:</strong> {{ subdivision.children.count }} | <strong>Сотрудников:</strong> {{ subdivision.employees.count }}
+                                    </p>
+                                </div>
+                                
+                                <!-- Декан -->
+                                <div class="col-md-6">
+                                    {% if subdivision.head %}
+                                    <div class="row align-items-center">
+                                        <div class="col-4">
+                                            {% if subdivision.head.employee.photo %}
+                                            <img src="{{ subdivision.head.employee.photo.url }}" alt="{{ subdivision.head.employee.surname }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px;">
+                                            {% else %}
+                                            <div style="width: 100%; height: 100px; background-color: #c0c0c0; border-radius: 4px;"></div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-8" style="font-size: 0.9rem; color: #666;">
+                                            <p class="mb-1"><strong>Декан:</strong></p>
+                                            <p class="mb-1">{{ subdivision.head.employee.surname }} {{ subdivision.head.employee.name }}</p>
+                                            {% if subdivision.head.internal_phone %}
+                                            <p class="mb-0"><strong>Телефон:</strong> {{ subdivision.head.internal_phone }}</p>
+                                            {% elif subdivision.head.city_phone %}
+                                            <p class="mb-0"><strong>Телефон:</strong> {{ subdivision.head.city_phone }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <p class="text-muted text-center">Декан не назначен</p>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Стрелка -->
+                                <div class="col-md-1 text-end">
+                                    <i class="bi bi-chevron-right" style="font-size: 2rem; color: #2b5a8e;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle"></i> Подразделения не найдены
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

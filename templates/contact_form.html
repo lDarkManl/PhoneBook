@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Добавить{% endif %} контакт - PhoneBook{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{% if form.instance.pk %}Редактировать{% else %}Добавить{% endif %} контакт</h1>
+    <a href="{% url 'contact_list' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.employee.id_for_label }}" class="form-label">Сотрудник *</label>
+                        {{ form.employee }}
+                        {% if form.employee.errors %}
+                            <div class="text-danger">{{ form.employee.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.subdivision.id_for_label }}" class="form-label">Подразделение *</label>
+                        {{ form.subdivision }}
+                        {% if form.subdivision.errors %}
+                            <div class="text-danger">{{ form.subdivision.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.post.id_for_label }}" class="form-label">Должность *</label>
+                        {{ form.post }}
+                        {% if form.post.errors %}
+                            <div class="text-danger">{{ form.post.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.internal_phone.id_for_label }}" class="form-label">Внутренний телефон</label>
+                        {{ form.internal_phone }}
+                        {% if form.internal_phone.errors %}
+                            <div class="text-danger">{{ form.internal_phone.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.city_phone.id_for_label }}" class="form-label">Городской телефон</label>
+                        {{ form.city_phone }}
+                        {% if form.city_phone.errors %}
+                            <div class="text-danger">{{ form.city_phone.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить
+                        </button>
+                        <a href="{% url 'contact_list' %}" class="btn btn-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

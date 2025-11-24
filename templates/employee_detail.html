@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ employee.surname }} {{ employee.name }} - PhoneBook{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ employee.surname }} {{ employee.name }} {{ employee.middle_name }}</h1>
+        {% if employee.academic_degree %}
+        <p class="lead text-muted">{{ employee.academic_degree }}</p>
+        {% endif %}
+    </div>
+    <div>
+        <a href="{% url 'employee_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Основная информация</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">ФИО</small>
+                    <h6>{{ employee.surname }} {{ employee.name }} {{ employee.middle_name|default:"" }}</h6>
+                </div>
+                
+                {% if employee.academic_degree %}
+                <div class="mb-3">
+                    <small class="text-muted">Ученая степень</small>
+                    <h6><span class="badge bg-success">{{ employee.academic_degree }}</span></h6>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <small class="text-muted">Роль в системе</small>
+                    <h6><span class="badge bg-info">{{ employee.role.name }}</span></h6>
+                </div>
+                
+                {% if employee.user %}
+                <div class="mb-3">
+                    <small class="text-muted">Пользователь</small>
+                    <h6>{{ employee.user.username }}</h6>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="mb-0"><i class="bi bi-briefcase"></i> Должности и контакты</h5>
+            </div>
+            <div class="card-body">
+                {% if employee.divisions.all %}
+                    {% for division in employee.divisions.all %}
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5 class="text-primary">{{ division.post.name }}</h5>
+                                    <p class="mb-2">
+                                        <i class="bi bi-building"></i> 
+                                        <strong>{{ division.subdivision.name }}</strong>
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="bi bi-geo-alt-fill text-danger"></i> 
+                                        Аудитория: {{ division.subdivision.id_location.building }}/{{ division.subdivision.id_location.room }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    {% if division.internal_phone %}
+                                    <p class="mb-2">
+                                        <i class="bi bi-telephone-fill text-info"></i> 
+                                        <strong>Внутренний:</strong> {{ division.internal_phone }}
+                                    </p>
+                                    {% endif %}
+                                    {% if division.city_phone %}
+                                    <p class="mb-2">
+                                        <i class="bi bi-phone-fill text-success"></i> 
+                                        <strong>Городской:</strong> {{ division.city_phone }}
+                                    </p>
+                                    {% endif %}
+                                    {% if division.email %}
+                                    <p class="mb-0">
+                                        <i class="bi bi-envelope-fill text-warning"></i> 
+                                        <a href="mailto:{{ division.email }}">{{ division.email }}</a>
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Контактная информация отсутствует
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

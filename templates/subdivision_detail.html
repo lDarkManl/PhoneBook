@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ subdivision.name }} - PhoneBook{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Информация о подразделении</h1>
+    <div>
+        <a href="{% url 'subdivision_update' subdivision.id %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        <a href="{% url 'subdivision_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Назад
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Основная информация</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">ID:</th>
+                        <td>{{ subdivision.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Название:</th>
+                        <td>{{ subdivision.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Тип:</th>
+                        <td><span class="badge bg-secondary">{{ subdivision.id_type_division.name }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Расположение:</th>
+                        <td><i class="bi bi-geo-alt"></i> {{ subdivision.id_location }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Сотрудники ({{ subdivision.employees.count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if subdivision.employees.all %}
+                <ul class="list-group">
+                    {% for emp_div in subdivision.employees.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'employee_detail' emp_div.employee.id %}">
+                            {{ emp_div.employee }}
+                        </a>
+                        <br>
+                        <small class="text-muted">{{ emp_div.post.name }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Сотрудники не назначены</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

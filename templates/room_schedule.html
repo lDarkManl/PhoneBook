@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Расписание аудиторий - PhoneBook{% endblock %}
+
+{% block content %}
+<!-- Секция поиска -->
+<div style="background-color: white; padding: 30px 0; border-bottom: 1px solid #e0e0e0;">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-md-8">
+                <form method="get" action="{% url 'room_schedule' %}">
+                    <div class="input-group" style="border: 1px solid #ddd; border-radius: 25px; overflow: visible;">
+                        <div class="dropdown">
+                            <button type="button" class="btn bg-white border-0" style="padding-left: 15px; border-radius: 25px 0 0 25px;" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-list" style="font-size: 1.2rem;"></i>
+                            </button>
+                            
+                            <!-- Выпадающее меню с выбором корпуса -->
+                            <ul class="dropdown-menu p-3" style="background-color: #2b5a8e; color: white; min-width: 250px;">
+                                <li><h6 class="text-white mb-3">КОРПУС:</h6></li>
+                                {% for building in buildings %}
+                                <li class="mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="building" id="building{{ forloop.counter }}" value="{{ building }}" {% if selected_building == building %}checked{% endif %}>
+                                        <label class="form-check-label text-white" for="building{{ forloop.counter }}">
+                                            {{ building }}
+                                        </label>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <input type="text" class="form-control border-0" name="room" placeholder="Введите для поиска" value="{{ selected_room }}" style="box-shadow: none;">
+                        <button class="btn border-0 bg-white" type="submit" style="padding-right: 15px; border-radius: 0 25px 25px 0;">
+                            <i class="bi bi-search" style="font-size: 1.2rem;"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2 text-end">
+                <a href="#" class="btn btn-primary" style="border-radius: 25px; padding: 10px 20px; font-weight: 600; background-color: #2b5a8e; border: none;">
+                    Экспорт<br>в Excel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if location %}
+<!-- Расписание занятий -->
+<div style="background-color: white; padding: 30px 0;">
+    <div class="container">
+        <!-- Дата и день недели -->
+        <div class="mb-4 text-center">
+            <h3 style="color: #2b5a8e; font-weight: bold; margin-bottom: 5px;">
+                {{ current_date|date:"d.m.Y" }}
+            </h3>
+            <p style="color: #555; font-size: 1.1rem; margin: 0;">
+                {{ current_date|date:"l" }}
+            </p>
+        </div>
+        
+        {% if today_schedules %}
+        <h4 style="color: black; font-weight: bold; margin-bottom: 20px;">Расписание занятий</h4>
+        {% for lesson in today_schedules %}
+        <div class="mb-3">
+            <h5 style="color: black; font-weight: bold;">{{ lesson.start_time|time:"H:i" }} - {{ lesson.end_time|time:"H:i" }}</h5>
+            <div class="card" style="background-color: #d4e6f1; border: none; border-radius: 8px;">
+                <div class="card-body p-3">
+                    <h6 style="color: #2c3e50; font-weight: bold; margin-bottom: 5px;">{{ lesson.subject.name }}</h6>
+                    <p class="mb-1" style="font-size: 0.9rem; color: #555;">{{ lesson.lesson_type.name }}</p>
+                    <p class="mb-0" style="font-size: 0.9rem; color: #555;">{{ lesson.teacher.surname }} {{ lesson.teacher.name }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> На сегодня занятий в этой аудитории нет
+        </div>
+        {% endif %}
+
+        <!-- Мероприятия -->
+        {% if events %}
+        <div class="mt-5">
+            <h4 style="color: black; font-weight: bold; margin-bottom: 20px;">Иные мероприятия</h4>
+            {% for event in events %}
+            <div class="mb-2">
+                <p class="mb-1" style="font-size: 0.95rem; color: #333;">
+                    <strong>
+                        {% if event.start_datetime %}{{ event.start_datetime|date:"H:i" }}{% endif %}
+                        {% if event.end_datetime %} - {{ event.end_datetime|time:"H:i" }}{% endif %}
+                    </strong>
+                </p>
+                <p class="mb-0" style="font-size: 0.9rem; color: #555;">{{ event.type_event.name }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<!-- Список всех аудиторий -->
+<div style="background-color: white; padding: 30px 0;">
+    <div class="container">
+        {% if selected_building and selected_room %}
+        <div class="alert alert-warning text-center mb-4">
+            <i class="bi bi-exclamation-triangle"></i> 
+            Аудитория {{ selected_building }}/{{ selected_room }} не найдена
+        </div>
+        {% endif %}
+        
+        <h4 style="color: #2b5a8e; font-weight: bold; margin-bottom: 20px;">Все аудитории</h4>
+        
+        {% regroup all_rooms by building as rooms_by_building %}
+        {% for building_group in rooms_by_building %}
+        <div class="mb-4">
+            <h5 style="color: #333; font-weight: bold; margin-bottom: 15px;">{{ building_group.grouper }}</h5>
+            <div class="row g-2">
+                {% for room in building_group.list %}
+                <div class="col-md-2">
+                    <a href="?building={{ room.building }}&room={{ room.room }}" class="text-decoration-none">
+                        <div class="card text-center" style="border: 1px solid #e0e0e0; border-radius: 8px; transition: all 0.3s;">
+                            <div class="card-body p-3">
+                                <h6 style="color: #2b5a8e; font-weight: bold; margin: 0;">{{ room.room }}</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
